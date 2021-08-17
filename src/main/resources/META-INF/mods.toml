@@ -22,6 +22,8 @@ modId="ride_along" #mandatory
 version="${file.jarVersion}" #mandatory
  # A display name for the mod
 displayName="Ride Along" #mandatory
+# A file name (in the root of the mod JAR) containing a logo for display
+logoFile="logo.png" #optional
 # A text field displayed in the mod UI
 authors="sekelsta" #optional
 # The description text for the mod (multi line!) (#mandatory)
