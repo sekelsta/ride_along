@@ -2,8 +2,8 @@ package sekelsta.ride_along;
 
 import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.horse.AbstractHorseEntity;
+import net.minecraft.entity.passive.*;
+import net.minecraft.entity.passive.horse.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
 
@@ -42,6 +42,23 @@ public final class EntityUtil {
         // Convert to kilograms on the basis that the player 
         // (hitbox 0.6 * 0.6 * 1.8 = 0.648) weighs 140 pounds / 63.5 kg
         weight *= 63.5 / 0.648;
+        if (entity instanceof BatEntity || entity instanceof ParrotEntity) {
+            weight *= 0.2;
+        }
+        else if (entity instanceof ChickenEntity
+                || entity instanceof CatEntity
+                || entity instanceof FoxEntity
+                || entity instanceof OcelotEntity
+                || entity instanceof RabbitEntity) {
+            weight *= 0.5;
+        }
+        else if (entity instanceof MuleEntity 
+                || entity instanceof TurtleEntity
+                || entity instanceof HorseEntity
+                || entity instanceof PigEntity
+                || entity instanceof CowEntity) {
+            weight *= 1.5;
+        }
         return weight;
 
     }
