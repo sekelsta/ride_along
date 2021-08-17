@@ -20,7 +20,7 @@ public class RideAlong {
 
     public static Logger logger = LogManager.getLogger(MODID);
 
-    public static final KeyBinding keyRide = new KeyBinding("key.ride", 341, "key.categories.misc");
+    public static final KeyBinding keyRide = new KeyBinding(MODID + ".key.ride", 341, "key.categories.misc");
 
     public RideAlong()
     {
