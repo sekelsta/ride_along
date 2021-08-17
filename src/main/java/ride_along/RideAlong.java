@@ -1,5 +1,7 @@
 package sekelsta.ride_along;
 
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -18,6 +20,8 @@ public class RideAlong {
 
     public static Logger logger = LogManager.getLogger(MODID);
 
+    public static final KeyBinding keyRide = new KeyBinding("key.ride", 341, "key.categories.misc");
+
     public RideAlong()
     {
         instance = this;
@@ -30,5 +34,6 @@ public class RideAlong {
     private void clientSetup(final FMLClientSetupEvent event)
     {
         MinecraftForge.EVENT_BUS.addListener(ClientEventHandler::handleInteract);
+        ClientRegistry.registerKeyBinding(keyRide);
     }
 }

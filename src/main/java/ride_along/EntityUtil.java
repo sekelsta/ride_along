@@ -45,7 +45,8 @@ public final class EntityUtil {
         if (entity instanceof BatEntity || entity instanceof ParrotEntity) {
             weight *= 0.2;
         }
-        else if (entity instanceof ChickenEntity
+        else if (entity instanceof BeeEntity
+                || entity instanceof ChickenEntity
                 || entity instanceof CatEntity
                 || entity instanceof FoxEntity
                 || entity instanceof OcelotEntity

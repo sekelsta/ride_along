@@ -60,7 +60,6 @@ public class CMountEntityPacket {
     private void handleMain(Context context) {
         ServerPlayerEntity sender = context.getSender();
         Entity target = sender.level.getEntity(this.entityId);
-        System.out.println("Type:" + target.getType() + "\nIs baby: " + EntityUtil.isBaby(target) + "\nWeight (Kg): " + EntityUtil.getWeight(target));
         if (target == null) {
             RideAlong.logger.warn("Could not find entity with id " + this.entityId + " requested by " 
                 + sender.getName().getString());
