@@ -1,7 +1,7 @@
 package sekelsta.ride_along;
 
 import net.minecraft.entity.AgeableEntity;
-import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.*;
 import net.minecraft.entity.passive.horse.*;
 import net.minecraft.entity.Entity;
@@ -60,6 +60,9 @@ public final class EntityUtil {
                 || entity instanceof CowEntity) {
             weight *= 1.5;
         }
+        else if (!(entity instanceof LivingEntity)) {
+            weight *= 2;
+        }
         return weight;
 
     }
@@ -91,10 +94,10 @@ public final class EntityUtil {
             strength = getTag(entity).getDouble(STRENGTH);
         }
         else if (entity instanceof AbstractHorseEntity) {
-            strength *= 2;
+            strength = 0.2;
         }
-        else if (entity instanceof ItemEntity) {
-            strength *= 20;
+        else if (!(entity instanceof LivingEntity)) {
+            strength = 100;
         }
 
         if (isBaby(entity)) {
