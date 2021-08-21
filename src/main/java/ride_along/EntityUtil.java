@@ -1,11 +1,12 @@
 package sekelsta.ride_along;
 
-import net.minecraft.entity.AgeableEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.*;
-import net.minecraft.entity.passive.horse.*;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ambient.Bat;
+import net.minecraft.world.entity.animal.*;
+import net.minecraft.world.entity.animal.horse.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.nbt.CompoundTag;
 
 public final class EntityUtil {
     private static final String WEIGHT = "WeightKg";
@@ -16,10 +17,10 @@ public final class EntityUtil {
     private static final String CHILD_STRENGTH = "ChildStrength";
 
     public static boolean isBaby(Entity entity) {
-        return entity instanceof AgeableEntity && ((AgeableEntity)entity).isBaby();
+        return entity instanceof AgeableMob && ((AgeableMob)entity).isBaby();
     }
 
-    private static CompoundNBT getTag(Entity entity) {
+    private static CompoundTag getTag(Entity entity) {
         return entity.getPersistentData().getCompound("RideAlong");
     }
 
@@ -42,22 +43,22 @@ public final class EntityUtil {
         // Convert to kilograms on the basis that the player 
         // (hitbox 0.6 * 0.6 * 1.8 = 0.648) weighs 140 pounds / 63.5 kg
         weight *= 63.5 / 0.648;
-        if (entity instanceof BatEntity || entity instanceof ParrotEntity) {
+        if (entity instanceof Bat || entity instanceof Parrot) {
             weight *= 0.2;
         }
-        else if (entity instanceof BeeEntity
-                || entity instanceof ChickenEntity
-                || entity instanceof CatEntity
-                || entity instanceof FoxEntity
-                || entity instanceof OcelotEntity
-                || entity instanceof RabbitEntity) {
+        else if (entity instanceof Bee
+                || entity instanceof Chicken
+                || entity instanceof Cat
+                || entity instanceof Fox
+                || entity instanceof Ocelot
+                || entity instanceof Rabbit) {
             weight *= 0.5;
         }
-        else if (entity instanceof MuleEntity 
-                || entity instanceof TurtleEntity
-                || entity instanceof HorseEntity
-                || entity instanceof PigEntity
-                || entity instanceof CowEntity) {
+        else if (entity instanceof Mule 
+                || entity instanceof Turtle
+                || entity instanceof Horse
+                || entity instanceof Pig
+                || entity instanceof Cow) {
             weight *= 1.5;
         }
         else if (!(entity instanceof LivingEntity)) {
@@ -72,7 +73,7 @@ public final class EntityUtil {
         if (getTag(entity).contains(BULK)) {
             bulk = getTag(entity).getDouble(BULK);
         }
-        else if (entity instanceof AnimalEntity) {
+        else if (entity instanceof Animal) {
             bulk *= 2;
         }
 
@@ -93,7 +94,7 @@ public final class EntityUtil {
         if (getTag(entity).contains(STRENGTH)) {
             strength = getTag(entity).getDouble(STRENGTH);
         }
-        else if (entity instanceof AbstractHorseEntity) {
+        else if (entity instanceof AbstractHorse) {
             strength = 0.2;
         }
         else if (!(entity instanceof LivingEntity)) {
