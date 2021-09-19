@@ -90,12 +90,12 @@ public final class EntityUtil {
     }
 
     public static double getCapacity(Entity entity) {
-        double strength = 0.1;
+        double strength = 0.15;
         if (getTag(entity).contains(STRENGTH)) {
             strength = getTag(entity).getDouble(STRENGTH);
         }
         else if (entity instanceof AbstractHorse) {
-            strength = 0.2;
+            strength = 0.22;
         }
         else if (!(entity instanceof LivingEntity)) {
             strength = 100;
