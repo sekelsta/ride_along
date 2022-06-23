@@ -17,6 +17,7 @@ public class ClientEventHandler {
         if (keyRide.isDown()) {
             CMountEntityPacket packet = new CMountEntityPacket(event.getTarget());
             RidingPacketHandler.CHANNEL.sendToServer(packet);
+            // TODO: Set interaction result to SUCCESS
         }
     }
 }

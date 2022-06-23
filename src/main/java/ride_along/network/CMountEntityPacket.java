@@ -9,7 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fmllegacy.network.NetworkEvent.Context;
+import net.minecraftforge.network.NetworkEvent.Context;
 
 import sekelsta.ride_along.RideAlong;
 import sekelsta.ride_along.EntityUtil;
@@ -110,7 +110,10 @@ public class CMountEntityPacket {
                 return;
             }
             target.ejectPassengers();
+            return;
         }
+        // If we haven't used the click by now, try as if this mod didn't exist
+        // TODO
     }
 
     public void handle(Supplier<Context> context) {
