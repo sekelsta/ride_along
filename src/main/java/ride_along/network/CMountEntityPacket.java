@@ -59,7 +59,7 @@ public class CMountEntityPacket {
     // afterwards.
     private void handleMain(Context context) {
         ServerPlayer sender = context.getSender();
-        Entity target = sender.level.getEntity(this.entityId);
+        Entity target = sender.level().getEntity(this.entityId);
         if (target == null) {
             RideAlong.logger.warn("Could not find entity with id " + this.entityId + " requested by " 
                 + sender.getName().getString());
@@ -81,7 +81,7 @@ public class CMountEntityPacket {
             }
         }
         // Otherwise try to mount it on an entity leashed to you
-        List<Mob> entities = sender.level.getEntitiesOfClass(
+        List<Mob> entities = sender.level().getEntitiesOfClass(
             Mob.class, 
             sender.getBoundingBox().inflate(9, 4, 9),
             (entity) -> {
