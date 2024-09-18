@@ -1,11 +1,12 @@
 package sekelsta.ride_along;
 
 import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ambient.Bat;
 import net.minecraft.world.entity.animal.*;
 import net.minecraft.world.entity.animal.horse.*;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
 
 public final class EntityUtil {
@@ -114,6 +115,32 @@ public final class EntityUtil {
         }
 
         return capacity;
+    }
+
+    // Returns true if we are allowed to either mount this entity onto another, or dismount its passengers
+    public static boolean isValidTarget(Entity target) {
+        // Cannot use this to move hostile mobs
+        if (!target.getType().getCategory().isFriendly()) {
+            return false;
+        }
+        // Cannot control other players
+        if (target instanceof Player) {
+            return false;
+        }
+        return true;
+    }
+
+    // Returns true if we are allowed to either mount this entity onto another, assuming it is already a valid target
+    public static boolean isValidRider(Entity rider) {
+        // Ban boats and whatnot from riding
+        if (!(rider instanceof LivingEntity)) {
+            return false;
+        }
+        // No aquatic riders
+        if (rider instanceof WaterAnimal) {
+            return false;
+        }
+        return true;
     }
 }
 

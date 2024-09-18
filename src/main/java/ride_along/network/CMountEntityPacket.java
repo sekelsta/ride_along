@@ -47,15 +47,6 @@ public class CMountEntityPacket implements CustomPacketPayload {
     }
 
     private boolean tryMounting(Entity rider, Entity mount) {
-        // Ban boats and whatnot from riding
-        if (!(rider instanceof LivingEntity)) {
-            return false;
-        }
-        // No aquatic riders
-        if (rider instanceof WaterAnimal) {
-            return false;
-        }
-
         if (EntityUtil.getBulk(rider) > EntityUtil.getCapacity(mount)) {
             return false;
         }
@@ -75,55 +66,45 @@ public class CMountEntityPacket implements CustomPacketPayload {
                 + sender.getName().getString());
             return;
         }
-        // Cannot use this to move hostile mobs
-        if (!target.getType().getCategory().isFriendly()) {
+        if (!EntityUtil.isValidTarget(target)) {
             return;
         }
-        // Cannot control other players
-        if (target instanceof Player) {
-            return;
-        }
-        // If mounted and the creature fits, mount it behind you
-        if (sender.isPassenger()) {
-            Entity mount = sender.getVehicle();
-            if (tryMounting(target, mount)) {
-                return;
+        if (EntityUtil.isValidRider(target)) {
+            // If mounted and the creature fits, mount it behind you
+            if (sender.isPassenger()) {
+                Entity mount = sender.getVehicle();
+                if (tryMounting(target, mount)) {
+                    return;
+                }
             }
-        }
-        // Otherwise try to mount it on an entity leashed to you
-        List<Mob> entities = sender.level().getEntitiesOfClass(
-            Mob.class, 
-            sender.getBoundingBox().inflate(9, 4, 9),
-            (entity) -> {
-                return entity != target 
-                    && entity.getLeashHolder() == sender;
-            }
-        );
-        for (Mob entity : entities) {
-            if (tryMounting(target, entity)) {
-                return;
+            // Otherwise try to mount it on an entity leashed to you
+            List<Mob> entities = sender.level().getEntitiesOfClass(
+                Mob.class, 
+                sender.getBoundingBox().inflate(9, 4, 9),
+                (entity) -> {
+                    return entity != target 
+                        && entity.getLeashHolder() == sender;
+                }
+            );
+            for (Mob entity : entities) {
+                if (tryMounting(target, entity)) {
+                    return;
+                }
             }
         }
         // Else if the target is not being ridden by a player, dismount all
         // its passengers
-        // Check friendly to avoid silly stuff like dismounting skeleton horse riders
-        // (Still allows dismounting chicken jockeys but whatever)
-        if (target.getType().getCategory().isFriendly()) {
-            for (Entity passenger : target.getPassengers()) {
-                if (passenger instanceof Player && passenger != sender) {
-                    return;
-                }
-            }
-            // Only if the target had a passenger before the click, though
-            if (target.getPassengers().size() == 1 
-                    && target.getControllingPassenger() == sender) {
+        for (Entity passenger : target.getPassengers()) {
+            if (passenger instanceof Player && passenger != sender) {
                 return;
             }
-            target.ejectPassengers();
+        }
+        // Only if the target had a passenger before the click, though
+        if (target.getPassengers().size() == 1 
+                && target.getControllingPassenger() == sender) {
             return;
         }
-        // If we haven't used the click by now, try as if this mod didn't exist
-        // TODO
+        target.ejectPassengers();
     }
 
     public void handle(PlayPayloadContext context) {

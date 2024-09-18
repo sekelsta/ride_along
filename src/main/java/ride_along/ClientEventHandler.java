@@ -1,6 +1,8 @@
 package sekelsta.ride_along;
 
 import net.minecraft.client.KeyMapping;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -17,9 +19,17 @@ public class ClientEventHandler {
     @OnlyIn(Dist.CLIENT)
     public static void handleInteract(EntityInteract event) {
         if (keyRide.isDown()) {
+            Entity target = event.getTarget();
+            if (!EntityUtil.isValidTarget(target)) {
+                return;
+            }
+            if (!EntityUtil.isValidRider(target) && target.getPassengers().size() == 0) {
+                return;
+            }
             CMountEntityPacket packet = new CMountEntityPacket(event.getTarget());
             PacketDistributor.SERVER.noArg().send(packet);
-            // TODO: Set interaction result to SUCCESS
+            event.setCancellationResult(InteractionResult.SUCCESS);
+            event.setCanceled(true);
         }
     }
 }
