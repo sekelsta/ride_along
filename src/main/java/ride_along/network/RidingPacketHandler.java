@@ -1,29 +1,16 @@
 package sekelsta.ride_along.network;
 
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+
 import sekelsta.ride_along.RideAlong;
 
 public class RidingPacketHandler {
-    private static int ID = 0;
-
     private static final String PROTOCOL_VERSION = "1";
 
-    public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-        // Name
-        new ResourceLocation(RideAlong.MODID, "main"),
-        // Protocol version supplier
-        () -> PROTOCOL_VERSION,
-        // Predicate - client compatible protocol versions
-        PROTOCOL_VERSION::equals,
-        // Predicate - server compatible protocol versions
-        PROTOCOL_VERSION::equals
-    );
-
-    public static void registerPackets() {
-        CHANNEL.registerMessage(ID++, CMountEntityPacket.class, 
-            CMountEntityPacket::encode, CMountEntityPacket::decode, 
-            CMountEntityPacket::handle);
+    public static void register(final RegisterPayloadHandlerEvent event) {
+        IPayloadRegistrar registrar = event.registrar(RideAlong.MODID)
+                .versioned(PROTOCOL_VERSION);
+        registrar.play(CMountEntityPacket.ID, CMountEntityPacket::decode, CMountEntityPacket::handle);
     }
 }

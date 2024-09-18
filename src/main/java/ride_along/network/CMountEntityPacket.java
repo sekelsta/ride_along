@@ -2,19 +2,23 @@ package sekelsta.ride_along.network;
 
 import java.util.List;
 import java.util.function.Supplier;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.animal.WaterAnimal;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent.Context;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import sekelsta.ride_along.RideAlong;
 import sekelsta.ride_along.EntityUtil;
 
-public class CMountEntityPacket {
+public class CMountEntityPacket implements CustomPacketPayload {
+    public static final ResourceLocation ID = new ResourceLocation(RideAlong.MODID, "cmount");
+
     private int entityId;
 
     public CMountEntityPacket() {}
@@ -27,8 +31,14 @@ public class CMountEntityPacket {
         this(entity.getId());
     }
 
-    public void encode(FriendlyByteBuf buffer) {
+    @Override
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeVarInt(this.entityId);
+    }
+
+    @Override
+    public ResourceLocation id() {
+        return ID;
     }
 
     public static CMountEntityPacket decode(FriendlyByteBuf buffer) {
@@ -57,8 +67,8 @@ public class CMountEntityPacket {
     // This is a separate method from handle so that return statements can
     // be used for control flow, while still marking the packet handled
     // afterwards.
-    private void handleMain(Context context) {
-        ServerPlayer sender = context.getSender();
+    private void handleMain(PlayPayloadContext context) {
+        Player sender = context.player().get();
         Entity target = sender.level().getEntity(this.entityId);
         if (target == null) {
             RideAlong.logger.warn("Could not find entity with id " + this.entityId + " requested by " 
@@ -116,11 +126,10 @@ public class CMountEntityPacket {
         // TODO
     }
 
-    public void handle(Supplier<Context> context) {
-        // Enqueue anything that needs to be thread-safe
-        context.get().enqueueWork(() -> {
-            handleMain(context.get());
+    public void handle(PlayPayloadContext context) {
+        // Handle on main thread
+        context.workHandler().execute(() -> {
+            handleMain(context);
         });
-        context.get().setPacketHandled(true);
     }
 }

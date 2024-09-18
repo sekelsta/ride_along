@@ -1,10 +1,10 @@
 package sekelsta.ride_along;
 
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.commons.lang3.ArrayUtils;
@@ -20,18 +20,17 @@ public class RideAlong {
 
     public static Logger logger = LogManager.getLogger(MODID);
 
-    public RideAlong()
+    public RideAlong(IEventBus modEventBus)
     {
         instance = this;
 
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
-
-        RidingPacketHandler.registerPackets();
+        modEventBus.addListener(this::clientSetup);
+        modEventBus.addListener(RidingPacketHandler::register);
     }
 
     private void clientSetup(final FMLClientSetupEvent event)
     {
-        MinecraftForge.EVENT_BUS.addListener(ClientEventHandler::handleInteract);
+        NeoForge.EVENT_BUS.addListener(ClientEventHandler::handleInteract);
         Minecraft.getInstance().options.keyMappings = ArrayUtils.add(Minecraft.getInstance().options.keyMappings, ClientEventHandler.keyRide);
     }
 }
