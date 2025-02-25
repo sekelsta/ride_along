@@ -27,7 +27,7 @@ public class ClientEventHandler {
                 return;
             }
             CMountEntityPacket packet = new CMountEntityPacket(event.getTarget());
-            PacketDistributor.SERVER.noArg().send(packet);
+            PacketDistributor.sendToServer(packet);
             event.setCancellationResult(InteractionResult.SUCCESS);
             event.setCanceled(true);
         }

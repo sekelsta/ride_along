@@ -3,6 +3,8 @@ package sekelsta.ride_along.network;
 import java.util.List;
 import java.util.function.Supplier;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -11,17 +13,15 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.animal.WaterAnimal;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import sekelsta.ride_along.RideAlong;
 import sekelsta.ride_along.EntityUtil;
 
-public class CMountEntityPacket implements CustomPacketPayload {
-    public static final ResourceLocation ID = new ResourceLocation(RideAlong.MODID, "cmount");
+public record CMountEntityPacket(int entityId) implements CustomPacketPayload {
+    public static final Type<CMountEntityPacket> TYPE = new Type<>(new ResourceLocation(RideAlong.MODID, "cmount"));
 
-    private int entityId;
-
-    public CMountEntityPacket() {}
+    public static final StreamCodec<FriendlyByteBuf, CMountEntityPacket> STREAM_CODEC = StreamCodec.composite(ByteBufCodecs.INT, CMountEntityPacket::entityId, CMountEntityPacket::new);
 
     public CMountEntityPacket(int entityId) {
         this.entityId = entityId;
@@ -32,18 +32,8 @@ public class CMountEntityPacket implements CustomPacketPayload {
     }
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeVarInt(this.entityId);
-    }
-
-    @Override
-    public ResourceLocation id() {
-        return ID;
-    }
-
-    public static CMountEntityPacket decode(FriendlyByteBuf buffer) {
-        int id = buffer.readVarInt();
-        return new CMountEntityPacket(id);
+    public Type<CMountEntityPacket> type() {
+        return TYPE;
     }
 
     private boolean tryMounting(Entity rider, Entity mount) {
@@ -54,12 +44,8 @@ public class CMountEntityPacket implements CustomPacketPayload {
         return rider.startRiding(mount);
     }
 
-    // Helper for handle which runs on the main thread
-    // This is a separate method from handle so that return statements can
-    // be used for control flow, while still marking the packet handled
-    // afterwards.
-    private void handleMain(PlayPayloadContext context) {
-        Player sender = context.player().get();
+    public void handle(IPayloadContext context) {
+        Player sender = context.player();
         Entity target = sender.level().getEntity(this.entityId);
         if (target == null) {
             RideAlong.logger.warn("Could not find entity with id " + this.entityId + " requested by " 
@@ -105,12 +91,5 @@ public class CMountEntityPacket implements CustomPacketPayload {
             return;
         }
         target.ejectPassengers();
-    }
-
-    public void handle(PlayPayloadContext context) {
-        // Handle on main thread
-        context.workHandler().execute(() -> {
-            handleMain(context);
-        });
     }
 }
